@@ -38,19 +38,19 @@
               ng-class="{active: !currentFilter}"
               ng-click="changeFilter()">
         全部
-        <span class="badge">{{ todos.length }}</span>
+        <span class="badge">{{ allCount }}</span>
       </button>
       <button class="btn btn-default"
               ng-class="{active: currentFilter == filter.remaining}"
               ng-click="changeFilter(filter.remaining)">
         未了
-        <span class="badge">2</span>
+        <span class="badge">{{ remainingCount }}</span>
       </button>
       <button class="btn btn-default"
               ng-class="{active: currentFilter == filter.done}"
               ng-click="changeFilter(filter.done)">
         完了
-        <span class="badge">1</span>
+        <span class="badge">{{ doneCount }}</span>
       </button>
     </div>
     <div class="btn-group">
