@@ -53,6 +53,28 @@ angular.module('App', ['LocationBar'])
             $scope.editing = originalTitle = null;
         };
 
+        // 全て完了/未了
+        $scope.checkAll = function () {
+            console.log('all');
+            var state = !!$scope.remainingCount; // 未了にするのか完了にするのかの判定
+
+            angular.forEach($scope.todos, function (todo) {
+                todo.done = state;
+            });
+        };
+
+        // 完了した ToDo を全て削除
+        $scope.removeDoneTodo = function () {
+            $scope.todos = where($scope.todos, $scope.filter.remaining);
+        };
+
+        // 任意の ToDo を削除
+        $scope.removeTodo = function (currentTodo) {
+            $scope.todos = where($scope.todos, function (todo) {
+                return currentTodo !== todo;
+            });
+        };
+
     }])
     .directive('mySelect', [function () {
         return function (scope, $el, attrs) {
