@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/example.css">
 </head>
-<body ng-app="App">
+<body ng-app="App" ng-controller="MainController">
 <div class="location-bar"></div>
 
 <div class="container">
@@ -15,7 +15,7 @@
     <h1>ToDo</h1>
   </div>
 
-  <form class="input-group input-group-lg">
+  <form class="input-group input-group-lg" ng-submit="addTodo()">
     <input type="text"
            required
            placeholder="新しい要件を入力"
@@ -35,7 +35,7 @@
     <div class="btn-group">
       <button class="btn btn-default active">
         全部
-        <span class="badge">3</span>
+        <span class="badge">{{ todos.length }}</span>
       </button>
       <button class="btn btn-default">
         未了
@@ -54,12 +54,12 @@
   <hr>
 
   <ul class="list-unstyled">
-    <li class="todo-item">
+    <li class="todo-item" ng-repeat="todo in todos">
       <form class="input-group input-group-lg">
         <label class="input-group-addon">
           <input type="checkbox">
         </label>
-        <p class="form-control input-lg todo-title">未了の ToDo</p>
+        <p class="form-control input-lg todo-title">{{ todo.title }}</p>
           <span class="input-group-btn del-btn">
             <button type="reset"
                     class="btn btn-danger">削除</button>
