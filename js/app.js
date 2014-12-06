@@ -37,5 +37,14 @@ angular.module('App', [])
             $scope.remainingCount = length - $scope.doneCount;
         }, true)
 
+
+        var originalTitle;
+        $scope.editing = null;
+
+        $scope.editTodo = function(todo) {
+            originalTitle = todo.title;
+            $scope.editing = todo;
+        }
+
     }]);
 
