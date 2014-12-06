@@ -2,46 +2,99 @@
  * Created by papua on 2014/12/06.
  */
 angular.module('App', ['LocationBar'])
-    .controller('MainController', ['$scope', '$filter', function($scope, $filter) {
+    .service('todos', ['$rootScope', '$filter', function ($scope, $filter) {
+        var list = [];
 
-        $scope.todos = [];
+        $scope.$watch(function () {
+            //$scopeのプロパティ以外の者を$watchするときは、第一引数にfunction
+            return list;
+        }, function (value) {
+            $scope.$broadcast('change:list', value);
+        }, true);
+
+        var where = $filter('filter');
+
+        var done = {done: true};
+        var remaining = {done: false};
+
+        //serviceに定義するときはレシーバはthis
+        this.filter = {
+            done: done,
+            remaining: remaining
+        };
+
+        this.getDone = function () {
+            return where(list, done);
+        };
+
+        this.add = function (title) {
+            list.push({
+                title: title,
+                done: false
+            });
+        };
+
+        this.remove = function (currentTodo) {
+            list = where(list, function (todo) {
+                return currentTodo !== todo;
+            });
+        };
+
+        this.removeDone = function () {
+            list = where(list, remaining);
+        };
+
+        this.changeState = function (state) {
+            angular.forEach(list, function (data) {
+                data.done = state;
+            });
+        };
+    }])
+    .controller('RegisterController', ['$scope', 'todos', function($scope, todos) {
         $scope.newTitle = '';
 
         $scope.addTodo = function() {
-            console.log('call addTodo');
-            $scope.todos.push({
-                title: $scope.newTitle,
-                done: false
-            });
-            //双方向
+            todos.add($scope.newTitle);
             $scope.newTitle = '';
         };
+    }])
+    .controller('ToolbarController', ['$scope', 'todos', function($scope, todos) {
+        //htmlのディレクティブでつかうのはserviceでなくてあくまで$scopeのプロパティ
+        $scope.filter = todos.filter;
 
-        $scope.filter = {
-            done: {done: true},
-            remaining: {done: false}
-        };
-
-        $scope.currentFilter = null;
-
-        $scope.changeFilter = function (filter) {
-            $scope.currentFilter = filter;
-        };
-
-        var where = $filter('filter');
-        $scope.$watch('todos', function(todos) {
-            var length = todos.length;
+        $scope.$on('change:list', function (evt, list) {
+            var length = list.length;
+            var doneCount = todos.getDone().length;
 
             $scope.allCount = length;
-            $scope.doneCount = where(todos, $scope.filter.done).length;
-            $scope.remainingCount = length - $scope.doneCount;
-        }, true);
+            $scope.doneCount = doneCount;
+            $scope.remainingCount = length - doneCount;
+        });
 
+        $scope.checkAll = function () {
+            //!!はbooleanへの型変換
+            todos.changeState(!!$scope.remainingCount);
+        };
+
+        $scope.removeDoneTodo = function () {
+            todos.removeDone();
+        };
+
+        $scope.changeFilter = function (filter) {
+            $scope.$emit('change:filter', filter);
+        };
+    }])
+    .controller('TodoListController', ['$scope', 'todos', function($scope, todos) {
+        $scope.$on('change:list', function (evt, list) {
+            //viewとバインドできるのはserviceのlistではなくて、あくまでも$scopeのtodoList
+            $scope.todoList = list;
+        });
 
         var originalTitle;
+
         $scope.editing = null;
 
-        $scope.editTodo = function(todo) {
+        $scope.editTodo = function (todo) {
             originalTitle = todo.title;
             $scope.editing = todo;
         };
@@ -53,28 +106,17 @@ angular.module('App', ['LocationBar'])
             $scope.editing = originalTitle = null;
         };
 
-        // 全て完了/未了
-        $scope.checkAll = function () {
-            console.log('all');
-            var state = !!$scope.remainingCount; // 未了にするのか完了にするのかの判定
-
-            angular.forEach($scope.todos, function (todo) {
-                todo.done = state;
-            });
+        $scope.removeTodo = function (todo) {
+            todos.remove(todo);
         };
+    }])
+    .controller('MainController', ['$scope', function($scope) {
+        $scope.currentFilter = null;
 
-        // 完了した ToDo を全て削除
-        $scope.removeDoneTodo = function () {
-            $scope.todos = where($scope.todos, $scope.filter.remaining);
-        };
-
-        // 任意の ToDo を削除
-        $scope.removeTodo = function (currentTodo) {
-            $scope.todos = where($scope.todos, function (todo) {
-                return currentTodo !== todo;
-            });
-        };
-
+        $scope.$on('change:filter', function (evt, filter) {
+            console.log($scope.currentFilter);
+            $scope.currentFilter = filter;
+        });
     }])
     .directive('mySelect', [function () {
         return function (scope, $el, attrs) {

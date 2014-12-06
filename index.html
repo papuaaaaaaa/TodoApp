@@ -15,7 +15,9 @@
     <h1>ToDo</h1>
   </div>
 
-  <form class="input-group input-group-lg" ng-submit="addTodo()">
+  <form class="input-group input-group-lg"
+        ng-controller="RegisterController"
+        ng-submit="addTodo()">
     <input type="text"
            required
            placeholder="新しい要件を入力"
@@ -29,7 +31,8 @@
 
   <hr>
 
-  <div class="btn-toolbar">
+  <div class="btn-toolbar"
+       ng-controller="ToolbarController">
     <div class="btn-group">
       <button class="btn btn-success"
               ng-click="checkAll()">全て完了/未了</button>
@@ -62,8 +65,9 @@
 
   <hr>
 
-  <ul class="list-unstyled">
-    <li class="todo-item" ng-repeat="todo in todos | filter:currentFilter"
+  <ul class="list-unstyled"
+      ng-controller="TodoListController">
+    <li class="todo-item" ng-repeat="todo in todoList | filter:currentFilter"
         ng-class="{done: todo.done, editing: todo == editing}">
       <form name="todoForm"
             class="input-group input-group-lg"
