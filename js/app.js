@@ -1,7 +1,7 @@
 /**
  * Created by papua on 2014/12/06.
  */
-angular.module('App', [])
+angular.module('App', ['LocationBar'])
     .controller('MainController', ['$scope', '$filter', function($scope, $filter) {
 
         $scope.todos = [];
@@ -35,7 +35,7 @@ angular.module('App', [])
             $scope.allCount = length;
             $scope.doneCount = where(todos, $scope.filter.done).length;
             $scope.remainingCount = length - $scope.doneCount;
-        }, true)
+        }, true);
 
 
         var originalTitle;
@@ -44,7 +44,29 @@ angular.module('App', [])
         $scope.editTodo = function(todo) {
             originalTitle = todo.title;
             $scope.editing = todo;
-        }
+        };
 
+        $scope.doneEdit = function (todoForm) {
+            if (todoForm.$invalid) {
+                $scope.editing.title = originalTitle;
+            }
+            $scope.editing = originalTitle = null;
+        };
+
+    }])
+    .directive('mySelect', [function () {
+        return function (scope, $el, attrs) {
+            // scope - 現在の $scope オブジェクト
+            // $el   - jqLite オブジェクト(jQuery ライクオブジェクト)
+            //         jQuery 使用時なら jQuery オブジェクト
+            // attrs - DOM 属性のハッシュ(属性名は正規化されている)
+
+            scope.$watch(attrs.mySelect, function (val) {
+                if (val) {
+                    console.log("set true" + $el[0]);
+                    $el[0].select();
+                }
+            });
+        };
     }]);
 

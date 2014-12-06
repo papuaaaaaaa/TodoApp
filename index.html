@@ -63,16 +63,22 @@
   <ul class="list-unstyled">
     <li class="todo-item" ng-repeat="todo in todos | filter:currentFilter"
         ng-class="{done: todo.done, editing: todo == editing}">
-      <form class="input-group input-group-lg">
-        <label class="input-group-addon">
+      <form name="todoForm"
+            class="input-group input-group-lg">
+        <label class="input-group-addon"
+               ng-submit="doneEdit()">
           <input type="checkbox" ng-model="todo.done">
         </label>
         <p class="form-control input-lg todo-title"
            ng-dblclick="editTodo(todo)"
            ng-hide="todo == editing">{{ todo.title }}</p>
-        <input type="text" class="form-control input-lg todo-title"
-               required ng-model="todo.title"
-               ng-show="todo == editing">
+        <input type="text"
+               class="form-control input-lg todo-title"
+               required
+               ng-model="todo.title"
+               my-select="todo == editing"
+               ng-show="todo == editing"
+               ng-blur="doneEdit(todoForm)">
         <span class="input-group-btn del-btn">
           <button type="reset"
                     class="btn btn-danger" ng-if="todo != editing">削除</button>
