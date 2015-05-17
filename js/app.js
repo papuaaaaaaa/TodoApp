@@ -17,7 +17,8 @@ angular.module('App', ['LocationBar'])
         var done = {done: true};
         var remaining = {done: false};
 
-        //serviceに定義するときはレシーバはthis
+        //serviceは独自の名前空間を持たせるのが煩雑なため、serviceに定義するときはレシーバはthis
+        //factoryでserviceを生成するようにすれば、綺麗に書けるらしい。
         this.filter = {
             done: done,
             remaining: remaining
